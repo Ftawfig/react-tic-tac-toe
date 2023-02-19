@@ -1,15 +1,25 @@
-import './tutorial.css';
-import { useState} from 'react';
+import './tutorial.scss';
+import { useEffect, useState} from 'react';
 
-export function Square({ num, value, onSquareClick }) {
+export function Square({ num, value, onSquareClick, winningSquares }) {
     function handleClick() {
         console.log(console.log('square #' + num + ' clicked: value:' + value));
         onSquareClick(num - 1);
     }
 
+    var isWinningSquare = false;
+
+    console.log(winningSquares);
+
+    for (let i = 0; i < winningSquares.length; i ++) {
+        if (winningSquares[i] == num - 1) {
+            isWinningSquare = true;
+        }
+    }
+
     return (
         <button 
-            className="square"
+            className= { "square" + (isWinningSquare == 1 ? "  winning-square" : "") }
             onClick={handleClick}
         >
             {value}
@@ -17,7 +27,7 @@ export function Square({ num, value, onSquareClick }) {
     );
 }
 
-function calculateWinner(squares, xIsNext) {
+function calculateWinner(squares, winningSquares, setWinningSquares) {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -28,46 +38,59 @@ function calculateWinner(squares, xIsNext) {
       [0, 4, 8],
       [2, 4, 6]
     ];
+
+
+    //check if any of the lines match up. if so, return the winner
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
+
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        
+        if(winningSquares[0] == null) {
+            setWinningSquares(lines[i].slice());
+        }
 
         return squares[a];
       }
     }
+
+    //If there are no empty squares, declare a draw
+    for (let i = 0; i < squares.length; i++) {
+        var draw = true;
+
+        if (squares[i] == null) {
+            draw = false;
+            break;
+        }
+    }
+
+    if (draw) {
+        console.log("Draw!");
+        return "Draw!";
+    }
+
     return null;
   }
 
+function randomBool(){
+    const max = 2;
+    const min = 0;
+
+    return Math.floor(Math.random() * 2) > 0;
+}
+
 //Row() - returns a Row component of three squares. Gives each square a number starting from {start}
-export function Row({ start, squares, setSquares, xIsNext, setXIsNext, setWinnerText}) {
+export function Row({ start, squares, handleClick, winningSquares}) {
     var row = [];
-
-    function handleClick(i) {
-        if (squares[i] || calculateWinner(squares, xIsNext)) {
-            return;
-        }
-
-        //slice makes a copy of an array
-        const newSquares = squares.slice();
-        if (xIsNext) {
-            newSquares[i] = "X";
-            setXIsNext(false);
-        } else {
-            newSquares[i] = "O";
-            setXIsNext(true);
-        }
-
-        setSquares(newSquares);
-    }
 
     //generate three squares 
     for(var i = 0; i < 3; i++) {
         var num = i + start;
-        console.log(num);
         row.push(<Square 
             num = {num} 
             value = { squares[num - 1] } 
             onSquareClick = {handleClick} 
+            winningSquares = { winningSquares }
         />);
     } 
 
@@ -75,25 +98,39 @@ export function Row({ start, squares, setSquares, xIsNext, setXIsNext, setWinner
 }
 
 //Board() - returns a Board componenent of nine squares across three rows
-function Board(xIsNext, setXIsNext) {
+function Board({xIsNext, squares, onPlay}) {
     var board = [];
+    const [winningSquares, setWinningSquares] = useState(Array(3).fill(null));
+    const winner = calculateWinner(squares, winningSquares, setWinningSquares);
     
-    //holds the state across all squares
-    const [squares, setSquares] = useState(Array(9).fill(null));
-    
-    const winner = calculateWinner(squares, xIsNext);
+    function handleClick(i) {
+        if (squares[i] || calculateWinner(squares, winningSquares, setWinningSquares)) {
+            return;
+        }
+
+        //slice makes a copy of an array
+        const newSquares = squares.slice();
+
+        newSquares[i] = xIsNext ? "O" : "X";
+
+        onPlay(newSquares);
+    }
 
     let status;
 
     if (winner) {
-        status = "Winner: "+ (xIsNext ? "O" : "X") + "!";
+        if(winner == "Draw!") {
+            status = winner;
+        } else {
+            status = "Winner: "+ (xIsNext ? "X" : "O") + "!";
+        }
     } else {
-        status = "Next player: " + (xIsNext ? "X" : "O");
+        status = "Next player: " + (xIsNext ? "O" : "X");
     }
 
     board.push(
         <>
-        <div className="status-text">{ status }</div>
+            <h2 className="status-text">{ status }</h2>
         </>
     );
 
@@ -101,9 +138,8 @@ function Board(xIsNext, setXIsNext) {
         board.push(<Row 
             start = { i * 3  + 1 } 
             squares = { squares } 
-            setSquares = { setSquares } 
-            xIsNext = { xIsNext }
-            setXIsNext = { setXIsNext }
+            handleClick = { handleClick }
+            winningSquares = { winningSquares }
         />);
     }
 
@@ -111,21 +147,60 @@ function Board(xIsNext, setXIsNext) {
 }
 
 export default function Game() {
-    const [xIsNext, setXIsNext] = useState(true);
+    //holds the state across all squares
+
+    //true if X's turn is next, false if O is next. Randomized at init
+    const [xIsNext, setXIsNext] = useState(randomBool());
     const [history, setHistory] = useState([Array(9).fill(null)]);
-    const currentSquares = history[history.length -1];
+    const [currentMove, setCurrentMove] = useState(0);
+    const currentSquares = history[currentMove];
+
+    function handlePlay(newSquares) {
+        const newHistory = [...history.slice(0, currentMove + 1), newSquares]
+        setHistory(newHistory);
+        setCurrentMove(newHistory.length -1);
+        setXIsNext(!xIsNext);
+    }
+
+    function jumpTo(moveNum) {
+        setHistory(history.slice(0, moveNum + 1));
+        setCurrentMove(moveNum);
+    }
+
+    const moves = history.map((squares, move) => {
+        let description;
+
+        if (move > 0) {
+            description  = "Go to move #" + move;
+        } else {
+            description  = "Restart";
+        }
+
+        return (
+            <li>
+                <button onClick={ () => jumpTo(move)}>{ description }</button>
+            </li>
+        );
+    });
 
     return (
-        <div className="game">
-            <div className="game-board">
-                <Board 
-                    xIsNext = { xIsNext }
-                    setXIsNext = { setXIsNext }
-                />
+        <>
+            <div className="game">
+                <header>
+                    <h1>Tic-Tac-Toe</h1>
+                </header>
+                <div className="game-board">
+                    <Board 
+                        xIsNext = { xIsNext }
+                        squares = { currentSquares }
+                        onPlay = { handlePlay }
+                    />
+                </div>
+                <div className= { "game-info" + (history.length == 1 ? " hidden" : "") }>
+                        <h2>Rewind:</h2>
+                        <ul className="moves-list">{ moves }</ul>
+                </div>
             </div>
-            <div className="game-info">
-                <ol></ol>
-            </div>
-        </div>
+        </>
     );
 }
