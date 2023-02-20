@@ -1,5 +1,9 @@
 import './tutorial.scss';
 import { useEffect, useState} from 'react';
+import socketClient  from "socket.io-client";
+
+const SERVER = "ws://localhost:3000";
+
 
 export function Square({ num, value, onSquareClick, winningSquares }) {
     function handleClick() {
@@ -147,7 +151,16 @@ function Board({xIsNext, squares, onPlay}) {
 }
 
 export default function Game() {
-    //holds the state across all squares
+    var socket = socketClient(SERVER, {transports: ['websocket']});
+
+    socket.on('connect', () => {
+        console.log(`I'm connected with the back-end`);
+    });
+
+    
+    socket.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
+    });
 
     //true if X's turn is next, false if O is next. Randomized at init
     const [xIsNext, setXIsNext] = useState(randomBool());

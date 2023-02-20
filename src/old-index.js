@@ -5,8 +5,6 @@ import App from './App';
 import Game from './tic-tac-toe';
 import reportWebVitals from './reportWebVitals';
 
-import io from 'socket.io-client';
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 //root.render(
 //  <React.StrictMode>
