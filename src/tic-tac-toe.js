@@ -1,4 +1,4 @@
-import './tutorial.scss';
+import './tic-tac-toe.scss';
 import { useEffect, useState} from 'react';
 import socketClient  from "socket.io-client";
 
@@ -151,17 +151,6 @@ function Board({xIsNext, squares, onPlay}) {
 }
 
 export default function Game() {
-    var socket = socketClient(SERVER, {transports: ['websocket']});
-
-    socket.on('connect', () => {
-        console.log(`I'm connected with the back-end`);
-    });
-
-    
-    socket.on("connect_error", (err) => {
-        console.log(`connect_error due to ${err.message}`);
-    });
-
     //true if X's turn is next, false if O is next. Randomized at init
     const [xIsNext, setXIsNext] = useState(randomBool());
     const [history, setHistory] = useState([Array(9).fill(null)]);
@@ -198,21 +187,16 @@ export default function Game() {
 
     return (
         <>
-            <div className="game">
-                <header>
-                    <h1>Tic-Tac-Toe</h1>
-                </header>
-                <div className="game-board">
-                    <Board 
-                        xIsNext = { xIsNext }
-                        squares = { currentSquares }
-                        onPlay = { handlePlay }
-                    />
-                </div>
-                <div className= { "game-info" + (history.length == 1 ? " hidden" : "") }>
-                        <h2>Rewind:</h2>
-                        <ul className="moves-list">{ moves }</ul>
-                </div>
+            <div className="game-board">
+                <Board 
+                    xIsNext = { xIsNext }
+                    squares = { currentSquares }
+                    onPlay = { handlePlay }
+                />
+            </div>
+            <div className= { "game-info" + (history.length == 1 ? " hidden" : "") }>
+                    <h2>Rewind:</h2>
+                    <ul className="moves-list">{ moves }</ul>
             </div>
         </>
     );

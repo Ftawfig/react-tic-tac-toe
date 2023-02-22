@@ -1,4 +1,17 @@
-# Getting Started with Create React App
+# React Tic-Tac-Toe
+
+## Build
+In node-app folder:
+    
+    yarn build
+
+## Start Server
+    node server.js
+
+## Deployment
+    yarn start
+
+## Old stuff
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

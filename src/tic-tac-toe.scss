@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC&family=Architects+Daughter&display=swap");
 
+@function randomNum($min, $max) {
+  $rand: random();
+  $randomNum: $min + floor($rand * (($max - $min) + 1));
+
+  @return $randomNum;
+}
+
 * {
     box-sizing: border-box;
   }
@@ -60,9 +67,35 @@
     padding: 0;
   }
   
+  button {
+    background:rgba(245, 233, 165, 0.92);
+    border-width: 4px;
+    border-color:rgb(153, 129, 114);
+    color: rgb(5, 61, 133);
+    font-size: 50px;
+    font-weight: bold;
+    text-align: center; 
+    font-family: 'Architects Daughter', cursive;
+    box-shadow: 10px 5px 5px #00000033;
+  }
+
+  button:hover {
+    transform: rotate(randomNum(3, 4)+deg);
+  }
+
+  .home-btns {
+    width:  100%;
+  }
+
+  .home-btn {
+    min-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+  }
+
   .square {
     background:rgba(245, 233, 165, 0.92);
-    font-size:1rem;
     margin:  -5px;
     border-width: 4px;
     border-color:rgb(153, 129, 114);
@@ -82,6 +115,10 @@
     box-shadow: 10px 5px 5px #00000033;
   }
 
+  button:hover {
+    background:rgba(248, 243, 210, 0.92);
+  }
+
   .square:hover {
     background:rgba(248, 243, 210, 0.92);
     width: 9.5vw;
@@ -91,6 +128,14 @@
   .winning-square {
     background-color: rgb(201, 227, 137);
     text-decoration: line-through;
+  }
+
+  .column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .row {
@@ -111,7 +156,7 @@
     margin-bottom: 10px;
   }
 
-  .root {
+  #root {
     height: 100%;
   }
 
@@ -121,7 +166,8 @@
     margin: auto;
     background-color: rgb(236, 234, 202);
     padding: 20px;
-    height: 1000vw;
+    margin-bottom: 0px;
+    height: 500vh;
   }
 
   .game-board {
@@ -167,19 +213,28 @@
     font-size: 64px;
   }
 
+  .header-nav ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .header-nav li {
+    margin: 30px;
+    margin-top: 5px;
+    font-size: 30px;
+    list-style-type: none;
+    font-family: 'Architects Daughter', cursive;    
+  }
+
+
   .hidden {
     display: none !important;
   }
 
 
-  @function randomNum($min, $max) {
-    $rand: random();
-    $randomNum: $min + floor($rand * (($max - $min) + 1));
-  
-    @return $randomNum;
-  }
-
-  .row:nth-child(2) .square:nth-child(1) {
+  .column:nth-child(1), .row:nth-child(2) .square:nth-child(1) {
     transform: rotate(randomNum(-3, 3)+deg);
     border-top-left-radius: random(32)+px random(32)+px;
     border-top-right-radius:  random(32)+px random(32)+px;
