@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Amatic+SC&family=Architects+Daughter&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Architects+Daughter&family=Roboto+Mono:wght@300;400;500;700&display=swap');
 
 @function randomNum($min, $max) {
   $rand: random();
@@ -15,7 +15,7 @@
     font-family: sans-serif;
     margin: 20px;
     padding: 0;
-    background-color: dimgray;
+    background-color: rgb(39, 37, 42);
   }
   
   h1 {
@@ -101,7 +101,8 @@
     border-color:rgb(153, 129, 114);
     color: rgb(5, 61, 133);
     float: left;
-    font-size: 5vw;
+    //font-size: 5vw;
+    font-size: 64px;
     font-weight: bold;
     width: 9vw;
     height: 9vw;
@@ -160,14 +161,30 @@
     height: 100%;
   }
 
+  .bg {
+    position: fixed;
+    display: float;
+    width: 90%;
+    min-width: 500px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgb(236, 234, 202);
+    padding: 20px;
+    margin-bottom: 0px;
+    height: 100vh;
+    z-index: -1;
+  }
 
   .game {
     width: 90%;
+    min-width: 500px;
     margin: auto;
     background-color: rgb(236, 234, 202);
     padding: 20px;
     margin-bottom: 0px;
-    height: 500vh;
+    height: auto;
   }
 
   .game-board {
@@ -211,6 +228,27 @@
     
     font-family: 'Architects Daughter', cursive;
     font-size: 64px;
+  }
+
+  footer {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(42, 122, 172);
+    width: 100%;
+    position: fixed;
+    bottom:  0;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px -6px 5px 2px rgb(0 0 0 / 20%)
+  }
+
+  footer > span, footer a {
+    margin: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    color: white;
+    font-weight: bold;
+    font-family: 'Roboto Mono', monospace;
   }
 
   .header-nav ul {
@@ -341,3 +379,57 @@
   .row:nth-child(4) .square:nth-child(3):hover {
     transform: rotate(randomNum(3, 6)+deg);
   }
+
+  //info page styles
+  .info-page {
+    background-color: white;
+    font-family: 'Roboto Mono', monospace; 
+    display: flex;
+    min-width: 350px;
+    flex-direction: column;
+    padding: 20px;
+    padding-bottom: 80px;
+    box-shadow: 5px 5px 5px #00000033;
+    max-width: 800px;
+    margin: auto;
+  }
+
+  .info-wrapper {
+    display: grid;
+    padding-left: 15px;
+    grid-template-columns: 150px 250px;
+    grid-gap: 10px;
+    row-gap: 30px;
+    overflow-wrap: break-word;
+  }
+
+  .info-page h2 {
+    padding: 20px;
+    background-color: rgb(71, 78, 96);
+    box-shadow: 5px 5px 5px #00000033;
+    color: white;
+    font-family: 'Roboto Mono', monospace; 
+    text-align: left;
+    font-size: 45px;
+    font-weight: 700;
+  }
+
+  .info-page ul {
+    float: left;
+  }
+
+  .description  {
+    padding-left: 15px;
+  }
+
+  @counter-style counter {
+    system: cyclic;
+    symbols: "\1F638" "\1F47D" "\1F916" "\1F47E";
+    suffix: "";
+  }
+
+  .info-page ul {
+    margin: 15px;
+    list-style-type: counter;
+  }
+  

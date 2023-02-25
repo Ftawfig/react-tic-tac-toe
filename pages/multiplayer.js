@@ -1,16 +1,20 @@
-import { Square, Row, Board } from "./tic-tac-toe";
+import { Board } from "./tic-tac-toe";
 import { useEffect, useState} from 'react';
 import io from "socket.io-client"
+import { useRouter } from 'next/router'
 
-const socket = io.connect("http://localhost:8000");
+const socket = io.connect("http://localhost:3000");
 
 function randomString() {
-    Math.random().toString(36).substring(2, 7);
+    return Math.random().toString(36).substring(2, 7);
 }
 
-export default function MultiplayerGame(gameId) {
+export default function MultiplayerGame() {
+    const router = useRouter();
+    const { gameId } = router.query;
+
     const [players, setPlayers] = useState(0);
-    const roomCode = gameId ? gameId : randomString();
+    const roomCode = randomString();
 
     //true if X's turn is next, false if O is next. Randomized at init
     const [xIsNext, setXIsNext] = useState(true);
@@ -77,7 +81,7 @@ export default function MultiplayerGame(gameId) {
 
     return (
         <>
-            <h2>Room Code: </h2>
+
             <div className="game-board">
                 <Board 
                     xIsNext = { xIsNext }

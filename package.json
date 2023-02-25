@@ -12,6 +12,8 @@
     "babel-register": "^6.26.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "express-rate-limiter": "^1.3.1",
     "http": "^0.0.1-security",
     "http-browserify": "^1.7.0",
     "https-browserify": "^1.0.0",
@@ -28,13 +30,10 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "start-client": "react-scripts start",
-    "build": "SET NODE_ENV=production npx webpack --config ./node_modules/react-scripts/config/webpack.config.js",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "start": "babel-node server.js",
-    "webpack:dev": "npx webpack --config webpack.config.js",
-    "ssr": "SET NODE_ENV=production && node ./server.js"
+    "start": "next",
+    "start-dev": "next dev",
+    "start-server": "node server.js",
+    "build": "next build"
   },
   "eslintConfig": {
     "extends": [
