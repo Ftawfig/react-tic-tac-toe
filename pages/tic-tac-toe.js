@@ -97,7 +97,9 @@ export function Row({ start, squares, handleClick, winningSquares}) {
 }
 
 //Board() - returns a Board componenent of nine squares across three rows
-export function Board({xIsNext, squares, onPlay}) {
+export function Board({xIsNext, squares, onPlay, setgameActive}) {
+    console.log(`<Board/> xIsNext ${xIsNext}`);
+
     var board = [];
     const [winningSquares, setWinningSquares] = useState(Array(3).fill(null));
     const winner = calculateWinner(squares, winningSquares, setWinningSquares);
@@ -110,7 +112,7 @@ export function Board({xIsNext, squares, onPlay}) {
         //slice makes a copy of an array
         const newSquares = squares.slice();
 
-        newSquares[i] = xIsNext ? "O" : "X";
+        newSquares[i] = xIsNext ? "X" :  "O";
 
         onPlay(newSquares);
     }
@@ -118,13 +120,17 @@ export function Board({xIsNext, squares, onPlay}) {
     let status;
 
     if (winner) {
+        if(setgameActive != null) {
+            setgameActive(false);
+        }
+
         if(winner == "Draw!") {
             status = winner;
         } else {
-            status = "Winner: "+ (xIsNext ? "X" : "O") + "!";
+            status = "Winner: "+  (xIsNext ? "O" : "X") + "!";
         }
     } else {
-        status = "Next player: " + (xIsNext ? "O" : "X");
+        status = "Next player: " + (xIsNext ? "X" : "O");
     }
 
     board.push(

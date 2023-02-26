@@ -5,7 +5,7 @@ const next = require("next");
 const cors = require("cors");
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
+const hostname = 'tictactoe.faditawfig.com';
 const PORT = 3000;
 
 //const app = express();
@@ -24,7 +24,7 @@ function randomBool(){
 
 app
     .prepare()
-    .then(() => {
+    .then( () => {
         const server = express();
         
         server.use(cors());
@@ -52,9 +52,28 @@ app
             console.log(`Client connected. socket.id: ${ socket.id }`);
         
             //listen for room join event
-            socket.on('join', (gameId) => {
-                console.log(`Client joined gameId: ${ gameId }`);
-                socket.join(gameId);
+            socket.on('join', async (gameId) => {
+                if(!io.sockets.adapter.rooms.get(gameId) || io.sockets.adapter.rooms.get(gameId).size < 2) {
+                    socket.join(gameId);
+
+                    //let clients know to start game
+                    if (io.sockets.adapter.rooms.get(gameId).size == 2) {
+                        
+                        //assign a random symbol to players and notify to start game
+                        let players = await io.in(gameId).fetchSockets();
+                        
+                        let rand = randomBool();
+                        players[0].emit("start_game", rand);
+                        players[1].emit("start_game", !rand);
+                    }
+
+                    console.log(`Client joined gameId: ${ gameId }`);
+                    console.log(`Players in Room: ${io.sockets.adapter.rooms.get(gameId).size}`);
+                } else 
+                {
+                    console.log(`Can't join gameId: ${ gameId } - game is full!`);
+                }
+                
 
                 //listen for turn
                 socket.on("send_turn", (data) => {
@@ -62,12 +81,15 @@ app
                     //emit turn data to the room
                     socket.broadcast.to(gameId).emit("receive_turn", data);
                 });
+
+                socket.on('disconnect', function() {
+                    console.log('Client disconnected.');
+                    console.log(`Players in Room: ${io.sockets.adapter.rooms.get(gameId).size}`);
+                });
             });
             
             // Disconnect listener
-            socket.on('disconnect', function() {
-                console.log('Client disconnected.');
-            });
+            
         });
     })
     .catch(ex => {

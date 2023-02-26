@@ -1,4 +1,5 @@
-import { useState} from 'react';
+import { useReducer, useState} from 'react';
+import { useRouter  } from 'next/router';
 import Link from 'next/link';
 
 export function randomString() {
@@ -7,10 +8,20 @@ export function randomString() {
 
 export default function Online() {
     const [join, setJoin] = useState(false);
-    
+    const [joinCode, setJoinCode] = useState("");
+    const router = useRouter();
+
+    const handleChange = (event) => {
+      setJoinCode(event.target.value);
+    }
+
     function handleClick() {
-      console.log("setJoin")
       setJoin(true);
+    }
+
+    function handleSubmit(joinCode) {
+      console.log(joinCode);
+      router.push('/multiplayer?gameId=' + joinCode);
     }
   
     return (
@@ -20,8 +31,8 @@ export default function Online() {
           { join ?
             <>
               <h3>Enter Join Code:</h3>
-              <input className="join-code" placeholder="Game Id"/>
-              <button className='home-btn'> Submit</button>
+              <input onInput={e => setJoinCode(e.target.value)} className="join-code" placeholder="Game Id"/>
+              <button className='home-btn' onClick={ handleSubmit }> Submit</button>
             </>
            : null }
       </div>
