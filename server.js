@@ -1,7 +1,6 @@
 const express = require('express');
-
+const { parse } = require('url')
 const socketIO = require('socket.io')
-const path = require('path');
 const next = require("next");
 const cors = require("cors");
 
@@ -30,39 +29,43 @@ app
         
         server.use(cors());
 
-        //server.get("/", (req, res) => {
-        //    return app.render(req, res, '/', query)
-        //});
+        server.get('/multiplayer', (req, res) => {
+            const parsedUrl = parse(req.url, true);
+            const { pathname, query } = parsedUrl;
+            console.log(parsedUrl);
 
-        server.get('/', (req, res) => {
-            console.log(req.headers);
-            return handle(req, res);
-          });
+            console.log(query.gameId);
+            return handle(req, res, '/multiplayer', query);
+        });
 
         server.get('*', (req, res) => {
             return handle(req, res);
-          });
-
+        });
+        
         const io = socketIO(server.listen(PORT, err => {
             if (err) throw err;
             console.log(`listening on *${PORT}`);
         })); 
 
-        let players = 0;
 
         io.on('connection', (socket) => {
-            players += 1;
-            socket.emit("player_count_change", players);
             console.log(`Client connected. socket.id: ${ socket.id }`);
         
-            socket.on("send_turn", (data) => {
-                socket.broadcast.emit("receive_turn", data);
+            //listen for room join event
+            socket.on('join', (gameId) => {
+                console.log(`Client joined gameId: ${ gameId }`);
+                socket.join(gameId);
+
+                //listen for turn
+                socket.on("send_turn", (data) => {
+                    console.log("received turn");
+                    //emit turn data to the room
+                    socket.broadcast.to(gameId).emit("receive_turn", data);
+                });
             });
-        
+            
             // Disconnect listener
             socket.on('disconnect', function() {
-                players -= 1;
-                socket.emit("player_count_change", players);
                 console.log('Client disconnected.');
             });
         });

@@ -5,16 +5,14 @@ import { useRouter } from 'next/router'
 
 const socket = io.connect("http://localhost:3000");
 
-function randomString() {
-    return Math.random().toString(36).substring(2, 7);
-}
-
-export default function MultiplayerGame() {
+export function MultiplayerGame() {
     const router = useRouter();
+    
+    //get gameId from URL parameter and join room
     const { gameId } = router.query;
+    socket.emit('join', gameId);
 
     const [players, setPlayers] = useState(0);
-    const roomCode = randomString();
 
     //true if X's turn is next, false if O is next. Randomized at init
     const [xIsNext, setXIsNext] = useState(true);
@@ -25,16 +23,16 @@ export default function MultiplayerGame() {
     var currentSquares = history[currentMove];
     console.log(`current move: ${currentMove}`);
 
-
     useEffect(() => {
-        socket.on("player_count_change", (data) => {
-            setPlayers(data.players)
-        });
-
         socket.on("receive_turn", (data) => {
             const newHistory = data.turn;
             
+            console.log(`history length: ${history.length}`);
+            console.log(history);
+            console.log(`newHistory length: ${newHistory.length}`);
+            console.log(history);
             if (newHistory.length > history.length) {
+                console.log('history changed');
                 setHistory(newHistory);
             }
             
@@ -81,7 +79,7 @@ export default function MultiplayerGame() {
 
     return (
         <>
-
+            <h2>{`Room Code: ${ gameId } `}</h2>
             <div className="game-board">
                 <Board 
                     xIsNext = { xIsNext }
@@ -96,3 +94,10 @@ export default function MultiplayerGame() {
         </>
     );
 }
+
+MultiplayerGame.getInitialProps = async ({ req }) => {
+    const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
+    return { userAgent }
+  }
+ 
+ export default MultiplayerGame;
